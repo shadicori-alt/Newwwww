@@ -1,0 +1,29 @@
+[
+  {
+    "id": "DRIVER001",
+    "name": "محمد عبد الله",
+    "phoneNumber": "01098765432",
+    "vehicleNumber": "أ ب ج 1234",
+    "status": "متاح",
+    "totalDeliveries": 45,
+    "totalReturns": 3
+  },
+  {
+    "id": "DRIVER002",
+    "name": "أحمد سعيد",
+    "phoneNumber": "01187654321",
+    "vehicleNumber": "د ه و 5678",
+    "status": "متاح",
+    "totalDeliveries": 62,
+    "totalReturns": 1
+  },
+  {
+    "id": "DRIVER003",
+    "name": "ياسر خالد",
+    "phoneNumber": "01276543210",
+    "vehicleNumber": "ز ح ط 9012",
+    "status": "مشغول",
+    "totalDeliveries": 38,
+    "totalReturns": 5
+  }
+]

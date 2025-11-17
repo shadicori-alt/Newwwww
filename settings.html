@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الإعدادات - نظام إدارة الفواتير والتوصيل</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="bi bi-truck"></i>
+                شركة التوصيل
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="bi bi-house-door"></i> لوحة التحكم
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="invoices.html">
+                            <i class="bi bi-receipt"></i> الفواتير
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="drivers.html">
+                            <i class="bi bi-person-fill-gear"></i> المناديب
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="alerts.html">
+                            <i class="bi bi-exclamation-triangle"></i> التنبيهات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="stock.html">
+                            <i class="bi bi-box-seam"></i> المخزون
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="archive.html">
+                            <i class="bi bi-archive"></i> الأرشيف
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="settings.html">
+                            <i class="bi bi-gear"></i> الإعدادات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light btn-sm mt-1" id="themeToggle" onclick="toggleTheme()">
+                            <i class="bi bi-moon-fill"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="mb-3">
+                    <i class="bi bi-gear text-primary"></i>
+                    الإعدادات
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">الرئيسية</a></li>
+                        <li class="breadcrumb-item active">الإعدادات</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Settings Sections -->
+        <div class="row">
+            <!-- Theme Settings -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-palette"></i>
+                        إعدادات المظهر
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">الوضع الحالي</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="darkModeToggle" onchange="toggleTheme()">
+                                <label class="form-check-label" for="darkModeToggle">
+                                    <span id="currentThemeText">الوضع الفاتح</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">ألوان التطبيق</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <button class="btn btn-outline-primary w-100 theme-option" data-theme="blue" onclick="setThemeColor('blue')">
+                                        <i class="bi bi-circle-fill text-primary"></i>
+                                        أزرق
+                                    </button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-outline-success w-100 theme-option" data-theme="green" onclick="setThemeColor('green')">
+                                        <i class="bi bi-circle-fill text-success"></i>
+                                        أخضر
+                                    </button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-outline-danger w-100 theme-option" data-theme="red" onclick="setThemeColor('red')">
+                                        <i class="bi bi-circle-fill text-danger"></i>
+                                        أحمر
+                                    </button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-outline-warning w-100 theme-option" data-theme="orange" onclick="setThemeColor('orange')">
+                                        <i class="bi bi-circle-fill text-warning"></i>
+                                        برتقالي
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Settings -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-sliders"></i>
+                        إعدادات النظام
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">لغة النظام</label>
+                            <select class="form-select" disabled>
+                                <option value="ar" selected>العربية</option>
+                                <option value="en">English</option>
+                            </select>
+                            <small class="text-muted">لغة النظام ثابتة على العربية حالياً</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">تنسيق التاريخ</label>
+                            <select class="form-select" id="dateFormat">
+                                <option value="ar-EG">مصري (يوم/شهر/سنة)</option>
+                                <option value="ar-SA">سعودي (سنة/شهر/يوم)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">تنسيق العملة</label>
+                            <select class="form-select" id="currencyFormat">
+                                <option value="EGP">جنيه مصري (EGP)</option>
+                                <option value="SAR">ريال سعودي (SAR)</option>
+                                <option value="USD">دولار أمريكي (USD)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notification Settings -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-bell"></i>
+                        إعدادات التنبيهات
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="delayedInvoiceAlert" checked>
+                                <label class="form-check-label" for="delayedInvoiceAlert">
+                                    تنبيه الفواتير المتأخرة
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="lowStockAlert" checked>
+                                <label class="form-check-label" for="lowStockAlert">
+                                    تنبيه مخزون منخفض
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">وقت التنبيه للفواتير المتأخرة (ساعات)</label>
+                            <input type="number" class="form-control" id="alertHours" value="24" min="1" max="72">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Management -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-database"></i>
+                        إدارة البيانات
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <button class="btn btn-info w-100" onclick="exportAllData()">
+                                <i class="bi bi-download"></i>
+                                تصدير جميع البيانات
+                            </button>
+                        </div>
+                        <div class="mb-3">
+                            <button class="btn btn-warning w-100" onclick="importData()">
+                                <i class="bi bi-upload"></i>
+                                استيراد البيانات
+                            </button>
+                            <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="handleFileImport(event)">
+                        </div>
+                        <div class="mb-3">
+                            <button class="btn btn-danger w-100" onclick="clearAllData()">
+                                <i class="bi bi-trash"></i>
+                                مسح جميع البيانات
+                            </button>
+                        </div>
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle"></i>
+                            جميع البيانات محفوظة في ذاكرة المتصفح فقط
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About System -->
+            <div class="col-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-info-circle"></i>
+                        حول النظام
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>معلومات النظام</h5>
+                                <ul class="list-unstyled">
+                                    <li><strong>الاسم:</strong> نظام إدارة الفواتير والتوصيل</li>
+                                    <li><strong>الإصدار:</strong> 1.0.0</li>
+                                    <li><strong>تاريخ الإصدار:</strong> نوفمبر 2025</li>
+                                    <li><strong>اللغة:</strong> العربية</li>
+                                    <li><strong>الترخيص:</strong> نظام مفتوح المصدر</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>إحصائيات النظام</h5>
+                                <ul class="list-unstyled">
+                                    <li><strong>إجمالي الفواتير:</strong> ${invoices.length + archivedInvoices.length}</li>
+                                    <li><strong>عدد المناديب:</strong> ${drivers.length}</li>
+                                    <li><strong>أصناف المخزون:</strong> ${stock.length}</li>
+                                    <li><strong>الفواتير المؤرشفة:</strong> ${archivedInvoices.length}</li>
+                                    <li><strong>حالة النظام:</strong> <span class="badge bg-success">يعمل</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Settings Button -->
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <button class="btn btn-primary btn-lg" onclick="saveSettings()">
+                    <i class="bi bi-save"></i>
+                    حفظ الإعدادات
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <p>&copy; 2025 شركة التوصيل. جميع الحقوق محفوظة.</p>
+            <p class="small text-muted">نظام إدارة الفواتير والتوصيل - تصميم وتطوير</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+
+    <script>
+        // Page-specific initialization
+        document.addEventListener('appReady', function() {
+            loadSettings();
+        });
+
+        function loadSettings() {
+            // Load current theme
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const currentThemeText = document.getElementById('currentThemeText');
+            
+            if (currentTheme === 'dark') {
+                darkModeToggle.checked = true;
+                currentThemeText.textContent = 'الوضع الداكن';
+            } else {
+                darkModeToggle.checked = false;
+                currentThemeText.textContent = 'الوضع الفاتح';
+            }
+
+            // Load saved settings
+            const savedSettings = localStorage.getItem('appSettings');
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                
+                if (settings.dateFormat) {
+                    document.getElementById('dateFormat').value = settings.dateFormat;
+                }
+                if (settings.currencyFormat) {
+                    document.getElementById('currencyFormat').value = settings.currencyFormat;
+                }
+                if (settings.alertHours) {
+                    document.getElementById('alertHours').value = settings.alertHours;
+                }
+                
+                // Set theme color
+                if (settings.themeColor) {
+                    setThemeColor(settings.themeColor);
+                }
+            }
+        }
+
+        function setThemeColor(color) {
+            // Remove active class from all theme buttons
+            document.querySelectorAll('.theme-option').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to selected button
+            document.querySelector(`[data-theme="${color}"]`).classList.add('active');
+            
+            // Apply theme color (this would modify CSS variables in a real implementation)
+            const root = document.documentElement;
+            switch(color) {
+                case 'blue':
+                    root.style.setProperty('--color-primary', '#2563eb');
+                    break;
+                case 'green':
+                    root.style.setProperty('--color-primary', '#059669');
+                    break;
+                case 'red':
+                    root.style.setProperty('--color-primary', '#dc2626');
+                    break;
+                case 'orange':
+                    root.style.setProperty('--color-primary', '#d97706');
+                    break;
+            }
+            
+            // Save theme color
+            const settings = getCurrentSettings();
+            settings.themeColor = color;
+            localStorage.setItem('appSettings', JSON.stringify(settings));
+        }
+
+        function getCurrentSettings() {
+            const savedSettings = localStorage.getItem('appSettings');
+            return savedSettings ? JSON.parse(savedSettings) : {};
+        }
+
+        function saveSettings() {
+            const settings = {
+                theme: currentTheme,
+                dateFormat: document.getElementById('dateFormat').value,
+                currencyFormat: document.getElementById('currencyFormat').value,
+                alertHours: parseInt(document.getElementById('alertHours').value),
+                delayedInvoiceAlert: document.getElementById('delayedInvoiceAlert').checked,
+                lowStockAlert: document.getElementById('lowStockAlert').checked
+            };
+            
+            localStorage.setItem('appSettings', JSON.stringify(settings));
+            showNotification('تم حفظ الإعدادات بنجاح', 'success');
+        }
+
+        function exportAllData() {
+            const allData = {
+                invoices: invoices,
+                drivers: drivers,
+                stock: stock,
+                archivedInvoices: archivedInvoices,
+                settings: getCurrentSettings(),
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(allData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('تم تصدير جميع البيانات', 'success');
+        }
+
+        function importData() {
+            document.getElementById('importFileInput').click();
+        }
+
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (confirm('هل أنت متأكد من استيراد هذه البيانات؟ سيتم استبدال جميع البيانات الحالية.')) {
+                        if (importedData.invoices) {
+                            // Update global variables
+                            invoices.length = 0;
+                            invoices.push(...importedData.invoices);
+                        }
+                        if (importedData.drivers) {
+                            drivers.length = 0;
+                            drivers.push(...importedData.drivers);
+                        }
+                        if (importedData.stock) {
+                            stock.length = 0;
+                            stock.push(...importedData.stock);
+                        }
+                        if (importedData.archivedInvoices) {
+                            archivedInvoices.length = 0;
+                            archivedInvoices.push(...importedData.archivedInvoices);
+                            localStorage.setItem('archivedInvoices', JSON.stringify(archivedInvoices));
+                        }
+                        if (importedData.settings) {
+                            localStorage.setItem('appSettings', JSON.stringify(importedData.settings));
+                        }
+                        
+                        showNotification('تم استيراد البيانات بنجاح', 'success');
+                        setTimeout(() => location.reload(), 1000);
+                    }
+                } catch (error) {
+                    showNotification('خطأ في ملف البيانات', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearAllData() {
+            if (confirm('هل أنت متأكد من مسح جميع البيانات؟ هذا الإجراء لا يمكن التراجع عنه.')) {
+                if (confirm('تأكيد نهائي: سيتم مسح جميع الفواتير، المناديب، المخزون، والإعدادات. هل تريد المتابعة؟')) {
+                    // Clear all data
+                    invoices.length = 0;
+                    drivers.length = 0;
+                    stock.length = 0;
+                    archivedInvoices.length = 0;
+                    
+                    // Clear localStorage
+                    localStorage.removeItem('archivedInvoices');
+                    localStorage.removeItem('appSettings');
+                    localStorage.removeItem('theme');
+                    
+                    showNotification('تم مسح جميع البيانات', 'info');
+                    setTimeout(() => location.reload(), 1000);
+                }
+            }
+        }
+
+        // Update theme toggle text when theme changes
+        const originalToggleTheme = toggleTheme;
+        toggleTheme = function() {
+            originalToggleTheme();
+            const currentThemeText = document.getElementById('currentThemeText');
+            if (currentTheme === 'dark') {
+                currentThemeText.textContent = 'الوضع الداكن';
+            } else {
+                currentThemeText.textContent = 'الوضع الفاتح';
+            }
+        };
+    </script>
+</body>
+</html>

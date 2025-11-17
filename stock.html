@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المخزون - نظام إدارة الفواتير والتوصيل</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="bi bi-truck"></i>
+                شركة التوصيل
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="bi bi-house-door"></i> لوحة التحكم
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="invoices.html">
+                            <i class="bi bi-receipt"></i> الفواتير
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="drivers.html">
+                            <i class="bi bi-person-fill-gear"></i> المناديب
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="alerts.html">
+                            <i class="bi bi-exclamation-triangle"></i> التنبيهات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="stock.html">
+                            <i class="bi bi-box-seam"></i> المخزون
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="archive.html">
+                            <i class="bi bi-archive"></i> الأرشيف
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="settings.html">
+                            <i class="bi bi-gear"></i> الإعدادات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light btn-sm mt-1" id="themeToggle" onclick="toggleTheme()">
+                            <i class="bi bi-moon-fill"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="mb-3">
+                    <i class="bi bi-box-seam text-primary"></i>
+                    إدارة المخزون
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">الرئيسية</a></li>
+                        <li class="breadcrumb-item active">المخزون</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number text-info">${stock.length}</div>
+                    <div class="stat-label">إجمالي الأصناف</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number text-warning">${getLowStockItems().length}</div>
+                    <div class="stat-label">أصناف منخفضة</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number text-success">${stock.filter(item => item.quantity >= item.minQuantity).length}</div>
+                    <div class="stat-label">أصناف مناسبة</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number text-primary">${stock.reduce((sum, item) => sum + item.quantity, 0)}</div>
+                    <div class="stat-label">إجمالي الكمية</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addStockModal">
+                    <i class="bi bi-plus-circle"></i>
+                    إضافة صنف جديد
+                </button>
+                <button class="btn btn-info" onclick="exportStockReport()">
+                    <i class="bi bi-download"></i>
+                    تصدير تقرير المخزون
+                </button>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="search-container">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="search-box">
+                        <input type="text" class="form-control" id="stockSearchInput" placeholder="بحث عن صنف...">
+                        <i class="bi bi-search"></i>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="categoryFilter">
+                        <option value="">جميع الفئات</option>
+                        <!-- Categories will be loaded here -->
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="stockStatusFilter">
+                        <option value="">جميع الحالات</option>
+                        <option value="normal">مناسب</option>
+                        <option value="low">منخفض</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100" onclick="clearStockFilters()">
+                        <i class="bi bi-x-circle"></i>
+                        مسح
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Table -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-table"></i>
+                قائمة المخزون
+                <span class="badge bg-secondary ms-2" id="stockCount">0</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="stockTable">
+                        <thead>
+                            <tr>
+                                <th onclick="sortStockTable('id')">
+                                    الكود
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortStockTable('name')">
+                                    الصنف
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortStockTable('category')">
+                                    الفئة
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortStockTable('quantity')">
+                                    الكمية
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortStockTable('minQuantity')">
+                                    الحد الأدنى
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortStockTable('price')">
+                                    السعر
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortStockTable('supplier')">
+                                    المورد
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th>الحالة</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stockTableBody">
+                            <!-- Stock items will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Stock Item Modal -->
+    <div class="modal fade" id="addStockModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-plus-circle"></i>
+                        إضافة صنف جديد
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addStockForm">
+                        <div class="mb-3">
+                            <label class="form-label">اسم الصنف</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">الفئة</label>
+                            <select class="form-select" name="category" required>
+                                <option value="">اختر الفئة</option>
+                                <option value="إلكترونيات">إلكترونيات</option>
+                                <option value="مستلزمات مكتبية">مستلزمات مكتبية</option>
+                                <option value="مستلزمات طباعة">مستلزمات طباعة</option>
+                                <option value="إكسسوارات">إكسسوارات</option>
+                                <option value="أخرى">أخرى</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">الكمية</label>
+                                    <input type="number" class="form-control" name="quantity" min="0" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">الحد الأدنى</label>
+                                    <input type="number" class="form-control" name="minQuantity" min="1" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">السعر</label>
+                            <input type="number" class="form-control" name="price" step="0.01" min="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">المورد</label>
+                            <input type="text" class="form-control" name="supplier" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="addNewStockItem()">
+                        <i class="bi bi-save"></i>
+                        حفظ الصنف
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Stock Item Modal -->
+    <div class="modal fade" id="editStockModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil-square"></i>
+                        تعديل الكمية
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editStockForm">
+                        <input type="hidden" name="itemId">
+                        <div class="mb-3">
+                            <label class="form-label">اسم الصنف</label>
+                            <input type="text" class="form-control" name="itemName" readonly>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">الكمية الحالية</label>
+                                    <input type="number" class="form-control" name="currentQuantity" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">الكمية الجديدة</label>
+                                    <input type="number" class="form-control" name="newQuantity" min="0" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">الحد الأدنى</label>
+                            <input type="number" class="form-control" name="minQuantity" readonly>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="updateStockQuantity()">
+                        <i class="bi bi-save"></i>
+                        تحديث الكمية
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <p>&copy; 2025 شركة التوصيل. جميع الحقوق محفوظة.</p>
+            <p class="small text-muted">نظام إدارة الفواتير والتوصيل - تصميم وتطوير</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+
+    <script>
+        let currentStock = [];
+        let stockSortColumn = '';
+        let stockSortDirection = 'asc';
+
+        // Page-specific initialization
+        document.addEventListener('appReady', function() {
+            loadStockPage();
+        });
+
+        function loadStockPage() {
+            loadCategoriesFilter();
+            loadStockTable();
+            setupStockEventListeners();
+        }
+
+        function loadCategoriesFilter() {
+            const categories = [...new Set(stock.map(item => item.category))];
+            const categoryFilter = document.getElementById('categoryFilter');
+            
+            const options = categories.map(category => 
+                `<option value="${category}">${category}</option>`
+            ).join('');
+            
+            categoryFilter.innerHTML = '<option value="">جميع الفئات</option>' + options;
+        }
+
+        function loadStockTable() {
+            currentStock = [...stock];
+            renderStockTable(currentStock);
+            updateStockCount();
+        }
+
+        function renderStockTable(stockToRender) {
+            const tbody = document.getElementById('stockTableBody');
+            
+            if (stockToRender.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">لا توجد أصناف في المخزون</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = stockToRender.map(item => {
+                const isLowStock = item.quantity < item.minQuantity;
+                const stockPercentage = Math.round((item.quantity / item.minQuantity) * 100);
+                
+                return `
+                    <tr class="${isLowStock ? 'table-warning' : ''}">
+                        <td><strong>${item.id}</strong></td>
+                        <td>${item.name}</td>
+                        <td>${item.category}</td>
+                        <td>
+                            <span class="badge ${isLowStock ? 'bg-danger' : 'bg-success'}">${item.quantity}</span>
+                        </td>
+                        <td>${item.minQuantity}</td>
+                        <td>${formatCurrency(item.price)}</td>
+                        <td>${item.supplier}</td>
+                        <td>
+                            ${isLowStock ? 
+                                '<span class="badge badge-low-stock">منخفض</span>' : 
+                                '<span class="badge bg-success">مناسب</span>'
+                            }
+                            ${isLowStock ? 
+                                `<div class="progress mt-1" style="height: 4px;">
+                                    <div class="progress-bar bg-danger" style="width: ${stockPercentage}%"></div>
+                                </div>` : ''
+                            }
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="editStockItem('${item.id}')">
+                                <i class="bi bi-pencil-square"></i>
+                                تعديل
+                            </button>
+                            <button class="btn btn-sm btn-outline-info" onclick="viewStockItemDetails('${item.id}')">
+                                <i class="bi bi-eye"></i>
+                                عرض
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateStockCount() {
+            document.getElementById('stockCount').textContent = currentStock.length;
+        }
+
+        function setupStockEventListeners() {
+            document.getElementById('stockSearchInput').addEventListener('input', handleStockSearch);
+            document.getElementById('categoryFilter').addEventListener('change', handleStockFilter);
+            document.getElementById('stockStatusFilter').addEventListener('change', handleStockFilter);
+        }
+
+        function handleStockSearch() {
+            const query = document.getElementById('stockSearchInput').value.toLowerCase();
+            const filtered = query ? stock.filter(item => 
+                item.name.toLowerCase().includes(query) ||
+                item.id.toLowerCase().includes(query) ||
+                item.category.toLowerCase().includes(query) ||
+                item.supplier.toLowerCase().includes(query)
+            ) : [...stock];
+            
+            currentStock = filtered;
+            renderStockTable(currentStock);
+            updateStockCount();
+        }
+
+        function handleStockFilter() {
+            const category = document.getElementById('categoryFilter').value;
+            const status = document.getElementById('stockStatusFilter').value;
+            
+            let filtered = [...stock];
+            
+            if (category) {
+                filtered = filtered.filter(item => item.category === category);
+            }
+            
+            if (status) {
+                if (status === 'low') {
+                    filtered = filtered.filter(item => item.quantity < item.minQuantity);
+                } else if (status === 'normal') {
+                    filtered = filtered.filter(item => item.quantity >= item.minQuantity);
+                }
+            }
+            
+            const searchQuery = document.getElementById('stockSearchInput').value.toLowerCase();
+            if (searchQuery) {
+                filtered = filtered.filter(item => 
+                    item.name.toLowerCase().includes(searchQuery) ||
+                    item.id.toLowerCase().includes(searchQuery) ||
+                    item.category.toLowerCase().includes(searchQuery) ||
+                    item.supplier.toLowerCase().includes(searchQuery)
+                );
+            }
+            
+            currentStock = filtered;
+            renderStockTable(currentStock);
+            updateStockCount();
+        }
+
+        function clearStockFilters() {
+            document.getElementById('stockSearchInput').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('stockStatusFilter').value = '';
+            
+            currentStock = [...stock];
+            renderStockTable(currentStock);
+            updateStockCount();
+        }
+
+        function sortStockTable(column) {
+            if (stockSortColumn === column) {
+                stockSortDirection = stockSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                stockSortColumn = column;
+                stockSortDirection = 'asc';
+            }
+            
+            const sorted = sortTable(currentStock, column, stockSortDirection);
+            renderStockTable(sorted);
+        }
+
+        function addNewStockItem() {
+            const form = document.getElementById('addStockForm');
+            const formData = new FormData(form);
+            
+            const stockData = {
+                name: formData.get('name'),
+                category: formData.get('category'),
+                quantity: parseInt(formData.get('quantity')),
+                minQuantity: parseInt(formData.get('minQuantity')),
+                price: parseFloat(formData.get('price')),
+                supplier: formData.get('supplier')
+            };
+            
+            const newItem = addStockItem(stockData);
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addStockModal'));
+            modal.hide();
+            
+            // Reset form
+            form.reset();
+            
+            // Reload table
+            loadStockPage();
+            
+            // Show success message
+            showNotification('تم إضافة الصنف بنجاح', 'success');
+        }
+
+        function editStockItem(itemId) {
+            const item = stock.find(s => s.id === itemId);
+            if (!item) return;
+            
+            const form = document.getElementById('editStockForm');
+            form.querySelector('[name="itemId"]').value = itemId;
+            form.querySelector('[name="itemName"]').value = item.name;
+            form.querySelector('[name="currentQuantity"]').value = item.quantity;
+            form.querySelector('[name="minQuantity"]').value = item.minQuantity;
+            form.querySelector('[name="newQuantity"]').value = item.quantity;
+            
+            const modal = new bootstrap.Modal(document.getElementById('editStockModal'));
+            modal.show();
+        }
+
+        function updateStockQuantity() {
+            const form = document.getElementById('editStockForm');
+            const formData = new FormData(form);
+            
+            const itemId = formData.get('itemId');
+            const newQuantity = parseInt(formData.get('newQuantity'));
+            
+            if (updateStockQuantity(itemId, newQuantity)) {
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editStockModal'));
+                modal.hide();
+                
+                // Reload table
+                loadStockPage();
+                
+                // Show success message
+                showNotification('تم تحديث الكمية بنجاح', 'success');
+            }
+        }
+
+        function viewStockItemDetails(itemId) {
+            const item = stock.find(s => s.id === itemId);
+            if (!item) return;
+            
+            const stockPercentage = Math.round((item.quantity / item.minQuantity) * 100);
+            const isLowStock = item.quantity < item.minQuantity;
+            
+            alert(`تفاصيل الصنف:
+                \nالكود: ${item.id}
+                \nالاسم: ${item.name}
+                \nالفئة: ${item.category}
+                \nالكمية الحالية: ${item.quantity}
+                \nالحد الأدنى: ${item.minQuantity}
+                \nالسعر: ${formatCurrency(item.price)}
+                \nالمورد: ${item.supplier}
+                \nالحالة: ${isLowStock ? 'منخفض' : 'مناسب'}
+                \نسبة التخزين: ${stockPercentage}%
+                \n${isLowStock ? `⚠️ تحذير: الكمية أقل من الحد الأدنى بنسبة ${100 - stockPercentage}%` : '✅ الكمية مناسبة'}
+            `);
+        }
+
+        function exportStockReport() {
+            const csvContent = "data:text/csv;charset=utf-8," + 
+                "الكود,الصنف,الفئة,الكمية,الحد الأدنى,السعر,الحالة,الحالة,الحالة\n" +
+                currentStock.map(item => {
+                    const status = item.quantity < item.minQuantity ? 'منخفض' : 'مناسب';
+                    return `${item.id},${item.name},${item.category},${item.quantity},${item.minQuantity},${item.price},${item.supplier},${status}`;
+                }).join("\n");
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "تقرير_المخزون.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('تم تصدير تقرير المخزون بنجاح', 'success');
+        }
+    </script>
+</body>
+</html>

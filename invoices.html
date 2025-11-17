@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الفواتير - نظام إدارة الفواتير والتوصيل</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="bi bi-truck"></i>
+                شركة التوصيل
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="bi bi-house-door"></i> لوحة التحكم
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="invoices.html">
+                            <i class="bi bi-receipt"></i> الفواتير
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="drivers.html">
+                            <i class="bi bi-person-fill-gear"></i> المناديب
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="alerts.html">
+                            <i class="bi bi-exclamation-triangle"></i> التنبيهات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="stock.html">
+                            <i class="bi bi-box-seam"></i> المخزون
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="archive.html">
+                            <i class="bi bi-archive"></i> الأرشيف
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="settings.html">
+                            <i class="bi bi-gear"></i> الإعدادات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light btn-sm mt-1" id="themeToggle" onclick="toggleTheme()">
+                            <i class="bi bi-moon-fill"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="mb-3">
+                    <i class="bi bi-receipt text-primary"></i>
+                    إدارة الفواتير
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">الرئيسية</a></li>
+                        <li class="breadcrumb-item active">الفواتير</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="search-container">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="search-box">
+                        <input type="text" class="form-control" id="searchInput" placeholder="بحث عن فاتورة...">
+                        <i class="bi bi-search"></i>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="statusFilter">
+                        <option value="">جميع الحالات</option>
+                        <option value="قيد التوصيل">قيد التوصيل</option>
+                        <option value="مسلمة">مسلمة</option>
+                        <option value="مرتجعة">مرتجعة</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="driverFilter">
+                        <option value="">جميع المناديب</option>
+                        <!-- Drivers will be loaded here -->
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="date" class="form-control" id="dateFilter">
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100" onclick="clearFilters()">
+                        <i class="bi bi-x-circle"></i>
+                        مسح
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addInvoiceModal">
+                    <i class="bi bi-plus-circle"></i>
+                    إضافة فاتورة جديدة
+                </button>
+                <button class="btn btn-info" onclick="exportInvoices()">
+                    <i class="bi bi-download"></i>
+                    تصدير الفواتير
+                </button>
+                <button class="btn btn-warning" onclick="downloadExcelTemplate()">
+                    <i class="bi bi-file-earmark-excel"></i>
+                    تحميل ملف Excel
+                </button>
+            </div>
+        </div>
+
+        <!-- Invoices Table -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-table"></i>
+                قائمة الفواتير
+                <span class="badge bg-secondary ms-2" id="invoiceCount">0</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="invoicesTable">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('id')">
+                                    رقم الفاتورة
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortTable('customerName')">
+                                    اسم العميل
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortTable('phoneNumber')">
+                                    رقم الهاتف
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortTable('address')">
+                                    العنوان
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortTable('amount')">
+                                    المبلغ
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortTable('driverId')">
+                                    المندوب
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortTable('status')">
+                                    الحالة
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortTable('date')">
+                                    التاريخ
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoicesTableBody">
+                            <!-- Invoices will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Invoice Modal -->
+    <div class="modal fade" id="addInvoiceModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-plus-circle"></i>
+                        إضافة فاتورة جديدة
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addInvoiceForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">اسم العميل</label>
+                                <input type="text" class="form-control" name="customerName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">رقم الهاتف</label>
+                                <input type="tel" class="form-control" name="phoneNumber" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">العنوان</label>
+                                <textarea class="form-control" name="address" rows="2" required></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">قيمة الفاتورة</label>
+                                <input type="number" class="form-control" name="amount" step="0.01" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">المندوب</label>
+                                <select class="form-select" name="driverId" required>
+                                    <option value="">اختر مندوب</option>
+                                    <!-- Drivers will be loaded here -->
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">الحالة</label>
+                                <select class="form-select" name="status" required>
+                                    <option value="قيد التوصيل">قيد التوصيل</option>
+                                    <option value="مسلمة">مسلمة</option>
+                                    <option value="مرتجعة">مرتجعة</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="addNewInvoice()">
+                        <i class="bi bi-save"></i>
+                        حفظ الفاتورة
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Status Modal -->
+    <div class="modal fade" id="editStatusModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil-square"></i>
+                        تعديل حالة الفاتورة
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editStatusForm">
+                        <input type="hidden" name="invoiceId">
+                        <div class="mb-3">
+                            <label class="form-label">رقم الفاتورة</label>
+                            <input type="text" class="form-control" name="invoiceIdDisplay" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">اسم العميل</label>
+                            <input type="text" class="form-control" name="customerNameDisplay" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">الحالة الجديدة</label>
+                            <select class="form-select" name="newStatus" required>
+                                <option value="قيد التوصيل">قيد التوصيل</option>
+                                <option value="مسلمة">مسلمة</option>
+                                <option value="مرتجعة">مرتجعة</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="updateInvoiceStatus()">
+                        <i class="bi bi-check-circle"></i>
+                        تحديث الحالة
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <p>&copy; 2025 شركة التوصيل. جميع الحقوق محفوظة.</p>
+            <p class="small text-muted">نظام إدارة الفواتير والتوصيل - تصميم وتطوير</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+
+    <script>
+        let currentInvoices = [];
+        let sortColumn = '';
+        let sortDirection = 'asc';
+
+        // Page-specific initialization
+        document.addEventListener('appReady', function() {
+            loadInvoicesPage();
+        });
+
+        function loadInvoicesPage() {
+            loadDriversSelect();
+            loadInvoicesTable();
+            setupEventListeners();
+        }
+
+        function loadDriversSelect() {
+            const driverSelect = document.querySelector('[name="driverId"]');
+            const driverFilter = document.getElementById('driverFilter');
+            
+            const options = drivers.map(driver => 
+                `<option value="${driver.id}">${driver.name}</option>`
+            ).join('');
+            
+            driverSelect.innerHTML = '<option value="">اختر مندوب</option>' + options;
+            driverFilter.innerHTML = '<option value="">جميع المناديب</option>' + options;
+        }
+
+        function loadInvoicesTable() {
+            currentInvoices = [...invoices];
+            renderInvoicesTable(currentInvoices);
+            updateInvoiceCount();
+        }
+
+        function renderInvoicesTable(invoicesToRender) {
+            const tbody = document.getElementById('invoicesTableBody');
+            
+            if (invoicesToRender.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">لا توجد فواتير</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = invoicesToRender.map(invoice => {
+                const driver = drivers.find(d => d.id === invoice.driverId);
+                return `
+                    <tr>
+                        <td><strong>${invoice.id}</strong></td>
+                        <td>${invoice.customerName}</td>
+                        <td>${invoice.phoneNumber}</td>
+                        <td>${invoice.address}</td>
+                        <td>${formatCurrency(invoice.amount)}</td>
+                        <td>${driver ? driver.name : 'غير محدد'}</td>
+                        <td>${getStatusBadge(invoice.status)}</td>
+                        <td>${formatDate(invoice.date)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="editInvoiceStatus('${invoice.id}')">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-info" onclick="viewInvoiceDetails('${invoice.id}')">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="archiveInvoiceConfirm('${invoice.id}')">
+                                <i class="bi bi-archive"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function getStatusBadge(status) {
+            switch(status) {
+                case 'قيد التوصيل':
+                    return '<span class="badge badge-pending">قيد التوصيل</span>';
+                case 'مسلمة':
+                    return '<span class="badge badge-delivered">مسلمة</span>';
+                case 'مرتجعة':
+                    return '<span class="badge badge-returned">مرتجعة</span>';
+                default:
+                    return `<span class="badge bg-secondary">${status}</span>`;
+            }
+        }
+
+        function updateInvoiceCount() {
+            document.getElementById('invoiceCount').textContent = currentInvoices.length;
+        }
+
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+            document.getElementById('statusFilter').addEventListener('change', handleFilter);
+            document.getElementById('driverFilter').addEventListener('change', handleFilter);
+            document.getElementById('dateFilter').addEventListener('change', handleFilter);
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value;
+            const filtered = query ? searchInvoices(query) : [...invoices];
+            applyFilters(filtered);
+        }
+
+        function handleFilter() {
+            const status = document.getElementById('statusFilter').value;
+            const driverId = document.getElementById('driverFilter').value;
+            const date = document.getElementById('dateFilter').value;
+            
+            let filtered = [...invoices];
+            
+            if (status) {
+                filtered = filtered.filter(inv => inv.status === status);
+            }
+            
+            if (driverId) {
+                filtered = filtered.filter(inv => inv.driverId === driverId);
+            }
+            
+            if (date) {
+                filtered = filtered.filter(inv => inv.date === date);
+            }
+            
+            const searchQuery = document.getElementById('searchInput').value;
+            if (searchQuery) {
+                filtered = filtered.filter(inv => 
+                    inv.customerName.includes(searchQuery) ||
+                    inv.id.includes(searchQuery) ||
+                    inv.phoneNumber.includes(searchQuery) ||
+                    inv.address.includes(searchQuery)
+                );
+            }
+            
+            currentInvoices = filtered;
+            renderInvoicesTable(currentInvoices);
+            updateInvoiceCount();
+        }
+
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('driverFilter').value = '';
+            document.getElementById('dateFilter').value = '';
+            
+            currentInvoices = [...invoices];
+            renderInvoicesTable(currentInvoices);
+            updateInvoiceCount();
+        }
+
+        function sortTable(column) {
+            if (sortColumn === column) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortColumn = column;
+                sortDirection = 'asc';
+            }
+            
+            const sorted = sortTable(currentInvoices, column, sortDirection);
+            renderInvoicesTable(sorted);
+        }
+
+        function addNewInvoice() {
+            const form = document.getElementById('addInvoiceForm');
+            const formData = new FormData(form);
+            
+            const invoiceData = {
+                customerName: formData.get('customerName'),
+                phoneNumber: formData.get('phoneNumber'),
+                address: formData.get('address'),
+                amount: parseFloat(formData.get('amount')),
+                driverId: formData.get('driverId'),
+                status: formData.get('status')
+            };
+            
+            const newInvoice = addInvoice(invoiceData);
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addInvoiceModal'));
+            modal.hide();
+            
+            // Reset form
+            form.reset();
+            
+            // Reload table
+            loadInvoicesTable();
+            
+            // Show success message
+            showNotification('تم إضافة الفاتورة بنجاح', 'success');
+        }
+
+        function editInvoiceStatus(invoiceId) {
+            const invoice = invoices.find(inv => inv.id === invoiceId);
+            if (!invoice) return;
+            
+            const form = document.getElementById('editStatusForm');
+            form.querySelector('[name="invoiceId"]').value = invoiceId;
+            form.querySelector('[name="invoiceIdDisplay"]').value = invoiceId;
+            form.querySelector('[name="customerNameDisplay"]').value = invoice.customerName;
+            form.querySelector('[name="newStatus"]').value = invoice.status;
+            
+            const modal = new bootstrap.Modal(document.getElementById('editStatusModal'));
+            modal.show();
+        }
+
+        function updateInvoiceStatus() {
+            const form = document.getElementById('editStatusForm');
+            const formData = new FormData(form);
+            
+            const invoiceId = formData.get('invoiceId');
+            const newStatus = formData.get('newStatus');
+            
+            if (updateInvoiceStatus(invoiceId, newStatus)) {
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editStatusModal'));
+                modal.hide();
+                
+                // Reload table
+                loadInvoicesTable();
+                
+                // Show success message
+                showNotification('تم تحديث حالة الفاتورة بنجاح', 'success');
+            }
+        }
+
+        function viewInvoiceDetails(invoiceId) {
+            const invoice = invoices.find(inv => inv.id === invoiceId);
+            if (!invoice) return;
+            
+            const driver = drivers.find(d => d.id === invoice.driverId);
+            
+            alert(`تفاصيل الفاتورة:
+                \nرقم الفاتورة: ${invoice.id}
+                \nاسم العميل: ${invoice.customerName}
+                \nرقم الهاتف: ${invoice.phoneNumber}
+                \nالعنوان: ${invoice.address}
+                \nالمبلغ: ${formatCurrency(invoice.amount)}
+                \nالمندوب: ${driver ? driver.name : 'غير محدد'}
+                \nالحالة: ${invoice.status}
+                \nالتاريخ: ${formatDate(invoice.date)}
+                \nآخر تحديث: ${formatDateTime(invoice.lastStatusUpdate)}
+            `);
+        }
+
+        function archiveInvoiceConfirm(invoiceId) {
+            if (confirm('هل أنت متأكد من نقل هذه الفاتورة إلى الأرشيف؟')) {
+                if (archiveInvoice(invoiceId)) {
+                    loadInvoicesTable();
+                    showNotification('تم نقل الفاتورة إلى الأرشيف', 'info');
+                }
+            }
+        }
+
+        function exportInvoices() {
+            const csvContent = "data:text/csv;charset=utf-8," + 
+                "رقم الفاتورة,اسم العميل,رقم الهاتف,العنوان,المبلغ,المندوب,الحالة,التاريخ\n" +
+                currentInvoices.map(inv => {
+                    const driver = drivers.find(d => d.id === inv.driverId);
+                    return `${inv.id},${inv.customerName},${inv.phoneNumber},${inv.address},${inv.amount},${driver ? driver.name : ''},${inv.status},${inv.date}`;
+                }).join("\n");
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "فواتير.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('تم تصدير الفواتير بنجاح', 'success');
+        }
+
+        function downloadExcelTemplate() {
+            // Create a link to download the Excel file
+            const link = document.createElement("a");
+            link.href = "نظام_الفواتير_Excel.xlsx";
+            link.download = "نظام_الفواتير_Excel.xlsx";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('تم تحميل ملف Excel بنجاح', 'success');
+        }
+    </script>
+</body>
+</html>

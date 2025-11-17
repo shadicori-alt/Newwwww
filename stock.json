@@ -1,0 +1,47 @@
+[
+  {
+    "id": "STK001",
+    "name": "جهاز لابتوب HP",
+    "category": "إلكترونيات",
+    "quantity": 15,
+    "minQuantity": 5,
+    "price": 8500.00,
+    "supplier": "تكنولوجيا المستقبل"
+  },
+  {
+    "id": "STK002",
+    "name": "طابعة Canon",
+    "category": "إلكترونيات",
+    "quantity": 8,
+    "minQuantity": 3,
+    "price": 2200.00,
+    "supplier": "العربية للتجارة"
+  },
+  {
+    "id": "STK003",
+    "name": "أوراق طباعة A4",
+    "category": "مستلزمات مكتبية",
+    "quantity": 45,
+    "minQuantity": 20,
+    "price": 25.50,
+    "supplier": "المصرية للورق"
+  },
+  {
+    "id": "STK004",
+    "name": "حبر طابعة أسود",
+    "category": "مستلزمات طباعة",
+    "quantity": 2,
+    "minQuantity": 5,
+    "price": 180.00,
+    "supplier": "التوفير للحبر"
+  },
+  {
+    "id": "STK005",
+    "name": "ماوس لاسلكي",
+    "category": "إكسسوارات",
+    "quantity": 25,
+    "minQuantity": 10,
+    "price": 120.00,
+    "supplier": "تك ستيشن"
+  }
+]

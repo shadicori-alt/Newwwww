@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأرشيف - نظام إدارة الفواتير والتوصيل</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="bi bi-truck"></i>
+                شركة التوصيل
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="bi bi-house-door"></i> لوحة التحكم
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="invoices.html">
+                            <i class="bi bi-receipt"></i> الفواتير
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="drivers.html">
+                            <i class="bi bi-person-fill-gear"></i> المناديب
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="alerts.html">
+                            <i class="bi bi-exclamation-triangle"></i> التنبيهات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="stock.html">
+                            <i class="bi bi-box-seam"></i> المخزون
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="archive.html">
+                            <i class="bi bi-archive"></i> الأرشيف
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="settings.html">
+                            <i class="bi bi-gear"></i> الإعدادات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light btn-sm mt-1" id="themeToggle" onclick="toggleTheme()">
+                            <i class="bi bi-moon-fill"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="mb-3">
+                    <i class="bi bi-archive text-primary"></i>
+                    أرشيف الفواتير
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">الرئيسية</a></li>
+                        <li class="breadcrumb-item active">الأرشيف</li>
+                    </ol>
+                </nav>
+                <p class="text-muted">الفواتير المؤرشفة والمنتهية</p>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card stat-card">
+                    <div class="stat-number text-info">${archivedInvoices.length}</div>
+                    <div class="stat-label">عدد الفواتير المؤرشفة</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card">
+                    <div class="stat-number text-success">${archivedInvoices.filter(inv => inv.status === 'مسلمة').length}</div>
+                    <div class="stat-label">مسلمة</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card">
+                    <div class="stat-number text-danger">${archivedInvoices.filter(inv => inv.status === 'مرتجعة').length}</div>
+                    <div class="stat-label">مرتجعة</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="search-container">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="search-box">
+                        <input type="text" class="form-control" id="archiveSearchInput" placeholder="بحث في الأرشيف...">
+                        <i class="bi bi-search"></i>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="archiveStatusFilter">
+                        <option value="">جميع الحالات</option>
+                        <option value="مسلمة">مسلمة</option>
+                        <option value="مرتجعة">مرتجعة</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="archiveDriverFilter">
+                        <option value="">جميع المناديب</option>
+                        <!-- Drivers will be loaded here -->
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="month" class="form-control" id="archiveMonthFilter">
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100" onclick="clearArchiveFilters()">
+                        <i class="bi bi-x-circle"></i>
+                        مسح
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <button class="btn btn-info" onclick="exportArchiveReport()">
+                    <i class="bi bi-download"></i>
+                    تصدير تقرير الأرشيف
+                </button>
+                <button class="btn btn-secondary" onclick="refreshArchive()">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    تحديث الأرشيف
+                </button>
+            </div>
+        </div>
+
+        <!-- Archive Table -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-table"></i>
+                قائمة الفواتير المؤرشفة
+                <span class="badge bg-secondary ms-2" id="archiveCount">0</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="archiveTable">
+                        <thead>
+                            <tr>
+                                <th onclick="sortArchiveTable('id')">
+                                    رقم الفاتورة
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortArchiveTable('customerName')">
+                                    اسم العميل
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortArchiveTable('phoneNumber')">
+                                    رقم الهاتف
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortArchiveTable('amount')">
+                                    المبلغ
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortArchiveTable('driverId')">
+                                    المندوب
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortArchiveTable('status')">
+                                    الحالة
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortArchiveTable('date')">
+                                    تاريخ الفاتورة
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th onclick="sortArchiveTable('archivedDate')">
+                                    تاريخ الأرشفة
+                                    <i class="bi bi-arrow-down-up"></i>
+                                </th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="archiveTableBody">
+                            <!-- Archived invoices will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <p>&copy; 2025 شركة التوصيل. جميع الحقوق محفوظة.</p>
+            <p class="small text-muted">نظام إدارة الفواتير والتوصيل - تصميم وتطوير</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+
+    <script>
+        let currentArchivedInvoices = [];
+        let archiveSortColumn = '';
+        let archiveSortDirection = 'asc';
+
+        // Page-specific initialization
+        document.addEventListener('appReady', function() {
+            loadArchivePage();
+        });
+
+        function loadArchivePage() {
+            loadDriversFilter();
+            loadArchiveTable();
+            setupArchiveEventListeners();
+        }
+
+        function loadDriversFilter() {
+            const archiveDriverFilter = document.getElementById('archiveDriverFilter');
+            
+            const options = drivers.map(driver => 
+                `<option value="${driver.id}">${driver.name}</option>`
+            ).join('');
+            
+            archiveDriverFilter.innerHTML = '<option value="">جميع المناديب</option>' + options;
+        }
+
+        function loadArchiveTable() {
+            currentArchivedInvoices = [...archivedInvoices];
+            renderArchiveTable(currentArchivedInvoices);
+            updateArchiveCount();
+        }
+
+        function renderArchiveTable(invoicesToRender) {
+            const tbody = document.getElementById('archiveTableBody');
+            
+            if (invoicesToRender.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">لا توجد فواتير مؤرشفة</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = invoicesToRender.map(invoice => {
+                const driver = drivers.find(d => d.id === invoice.driverId);
+                return `
+                    <tr>
+                        <td><strong>${invoice.id}</strong></td>
+                        <td>${invoice.customerName}</td>
+                        <td>${invoice.phoneNumber}</td>
+                        <td>${formatCurrency(invoice.amount)}</td>
+                        <td>${driver ? driver.name : 'غير محدد'}</td>
+                        <td>${getStatusBadge(invoice.status)}</td>
+                        <td>${formatDate(invoice.date)}</td>
+                        <td>${formatDate(invoice.archivedDate || invoice.date)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewArchivedInvoice('${invoice.id}')">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteArchivedInvoice('${invoice.id}')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function getStatusBadge(status) {
+            switch(status) {
+                case 'مسلمة':
+                    return '<span class="badge badge-delivered">مسلمة</span>';
+                case 'مرتجعة':
+                    return '<span class="badge badge-returned">مرتجعة</span>';
+                default:
+                    return `<span class="badge bg-secondary">${status}</span>`;
+            }
+        }
+
+        function updateArchiveCount() {
+            document.getElementById('archiveCount').textContent = currentArchivedInvoices.length;
+        }
+
+        function setupArchiveEventListeners() {
+            document.getElementById('archiveSearchInput').addEventListener('input', handleArchiveSearch);
+            document.getElementById('archiveStatusFilter').addEventListener('change', handleArchiveFilter);
+            document.getElementById('archiveDriverFilter').addEventListener('change', handleArchiveFilter);
+            document.getElementById('archiveMonthFilter').addEventListener('change', handleArchiveFilter);
+        }
+
+        function handleArchiveSearch() {
+            const query = document.getElementById('archiveSearchInput').value;
+            const filtered = query ? searchArchivedInvoices(query) : [...archivedInvoices];
+            applyArchiveFilters(filtered);
+        }
+
+        function handleArchiveFilter() {
+            const status = document.getElementById('archiveStatusFilter').value;
+            const driverId = document.getElementById('archiveDriverFilter').value;
+            const month = document.getElementById('archiveMonthFilter').value;
+            
+            let filtered = [...archivedInvoices];
+            
+            if (status) {
+                filtered = filtered.filter(inv => inv.status === status);
+            }
+            
+            if (driverId) {
+                filtered = filtered.filter(inv => inv.driverId === driverId);
+            }
+            
+            if (month) {
+                filtered = filtered.filter(inv => {
+                    const invoiceMonth = new Date(inv.date).toISOString().slice(0, 7);
+                    return invoiceMonth === month;
+                });
+            }
+            
+            const searchQuery = document.getElementById('archiveSearchInput').value;
+            if (searchQuery) {
+                filtered = filtered.filter(inv => 
+                    inv.customerName.includes(searchQuery) ||
+                    inv.id.includes(searchQuery) ||
+                    inv.phoneNumber.includes(searchQuery)
+                );
+            }
+            
+            currentArchivedInvoices = filtered;
+            renderArchiveTable(currentArchivedInvoices);
+            updateArchiveCount();
+        }
+
+        function clearArchiveFilters() {
+            document.getElementById('archiveSearchInput').value = '';
+            document.getElementById('archiveStatusFilter').value = '';
+            document.getElementById('archiveDriverFilter').value = '';
+            document.getElementById('archiveMonthFilter').value = '';
+            
+            currentArchivedInvoices = [...archivedInvoices];
+            renderArchiveTable(currentArchivedInvoices);
+            updateArchiveCount();
+        }
+
+        function sortArchiveTable(column) {
+            if (archiveSortColumn === column) {
+                archiveSortDirection = archiveSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                archiveSortColumn = column;
+                archiveSortDirection = 'asc';
+            }
+            
+            const sorted = sortTable(currentArchivedInvoices, column, archiveSortDirection);
+            renderArchiveTable(sorted);
+        }
+
+        function viewArchivedInvoice(invoiceId) {
+            const invoice = archivedInvoices.find(inv => inv.id === invoiceId);
+            if (!invoice) return;
+            
+            const driver = drivers.find(d => d.id === invoice.driverId);
+            
+            alert(`تفاصيل الفاتورة المؤرشفة:
+                \nرقم الفاتورة: ${invoice.id}
+                \nاسم العميل: ${invoice.customerName}
+                \nرقم الهاتف: ${invoice.phoneNumber}
+                \nالعنوان: ${invoice.address}
+                \nالمبلغ: ${formatCurrency(invoice.amount)}
+                \nالمندوب: ${driver ? driver.name : 'غير محدد'}
+                \nالحالة: ${invoice.status}
+                \nتاريخ الفاتورة: ${formatDate(invoice.date)}
+                \nتاريخ الأرشفة: ${formatDate(invoice.archivedDate || invoice.date)}
+                \nآخر تحديث: ${formatDateTime(invoice.lastStatusUpdate)}
+            `);
+        }
+
+        function deleteArchivedInvoice(invoiceId) {
+            if (confirm('هل أنت متأكد من حذف هذه الفاتورة من الأرشيف؟')) {
+                const index = archivedInvoices.findIndex(inv => inv.id === invoiceId);
+                if (index !== -1) {
+                    archivedInvoices.splice(index, 1);
+                    localStorage.setItem('archivedInvoices', JSON.stringify(archivedInvoices));
+                    loadArchiveTable();
+                    showNotification('تم حذف الفاتورة من الأرشيف', 'info');
+                }
+            }
+        }
+
+        function exportArchiveReport() {
+            const csvContent = "data:text/csv;charset=utf-8," + 
+                "رقم الفاتورة,اسم العميل,رقم الهاتف,العنوان,المبلغ,المندوب,الحالة,تاريخ الفاتورة,تاريخ الأرشفة\n" +
+                currentArchivedInvoices.map(inv => {
+                    const driver = drivers.find(d => d.id === inv.driverId);
+                    return `${inv.id},${inv.customerName},${inv.phoneNumber},${inv.address},${inv.amount},${driver ? driver.name : ''},${inv.status},${inv.date},${inv.archivedDate || inv.date}`;
+                }).join("\n");
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "تقرير_الأرشيف.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('تم تصدير تقرير الأرشيف بنجاح', 'success');
+        }
+
+        function refreshArchive() {
+            loadArchivePage();
+            showNotification('تم تحديث الأرشيف', 'info');
+        }
+    </script>
+</body>
+</html>

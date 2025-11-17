@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المناديب - نظام إدارة الفواتير والتوصيل</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="bi bi-truck"></i>
+                شركة التوصيل
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="bi bi-house-door"></i> لوحة التحكم
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="invoices.html">
+                            <i class="bi bi-receipt"></i> الفواتير
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="drivers.html">
+                            <i class="bi bi-person-fill-gear"></i> المناديب
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="alerts.html">
+                            <i class="bi bi-exclamation-triangle"></i> التنبيهات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="stock.html">
+                            <i class="bi bi-box-seam"></i> المخزون
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="archive.html">
+                            <i class="bi bi-archive"></i> الأرشيف
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="settings.html">
+                            <i class="bi bi-gear"></i> الإعدادات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light btn-sm mt-1" id="themeToggle" onclick="toggleTheme()">
+                            <i class="bi bi-moon-fill"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="mb-3">
+                    <i class="bi bi-person-fill-gear text-primary"></i>
+                    إدارة المناديب
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">الرئيسية</a></li>
+                        <li class="breadcrumb-item active">المناديب</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number text-info">${drivers.length}</div>
+                    <div class="stat-label">عدد المناديب</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number text-success">${drivers.filter(d => d.status === 'متاح').length}</div>
+                    <div class="stat-label">متاحين</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number text-warning">${drivers.filter(d => d.status === 'مشغول').length}</div>
+                    <div class="stat-label">مشغولين</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number text-primary">${drivers.reduce((sum, d) => sum + d.totalDeliveries, 0)}</div>
+                    <div class="stat-label">إجمالي التوصيلات</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDriverModal">
+                    <i class="bi bi-person-plus"></i>
+                    إضافة مندوب جديد
+                </button>
+            </div>
+        </div>
+
+        <!-- Drivers Table -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-people"></i>
+                قائمة المناديب
+                <span class="badge bg-secondary ms-2">${drivers.length}</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="driversTable">
+                        <thead>
+                            <tr>
+                                <th>الاسم</th>
+                                <th>رقم الهاتف</th>
+                                <th>رقم المركبة</th>
+                                <th>الحالة</th>
+                                <th>عدد التوصيلات</th>
+                                <th>عدد المرتجعات</th>
+                                <th>نسبة النجاح</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="driversTableBody">
+                            <!-- Drivers will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Driver Modal -->
+    <div class="modal fade" id="addDriverModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-person-plus"></i>
+                        إضافة مندوب جديد
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addDriverForm">
+                        <div class="mb-3">
+                            <label class="form-label">الاسم الكامل</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">رقم الهاتف</label>
+                            <input type="tel" class="form-control" name="phoneNumber" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">رقم المركبة</label>
+                            <input type="text" class="form-control" name="vehicleNumber" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">الحالة</label>
+                            <select class="form-select" name="status" required>
+                                <option value="متاح">متاح</option>
+                                <option value="مشغول">مشغول</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="addNewDriver()">
+                        <i class="bi bi-save"></i>
+                        حفظ المندوب
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Driver Details Modal -->
+    <div class="modal fade" id="driverDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-person-lines-fill"></i>
+                        تفاصيل المندوب
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="driverDetailsContent">
+                        <!-- Driver details will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <p>&copy; 2025 شركة التوصيل. جميع الحقوق محفوظة.</p>
+            <p class="small text-muted">نظام إدارة الفواتير والتوصيل - تصميم وتطوير</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+
+    <script>
+        // Page-specific initialization
+        document.addEventListener('appReady', function() {
+            loadDriversPage();
+        });
+
+        function loadDriversPage() {
+            loadDriversTable();
+        }
+
+        function loadDriversTable() {
+            const tbody = document.getElementById('driversTableBody');
+            
+            if (drivers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">لا توجد مناديب</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = drivers.map(driver => {
+                const successRate = driver.totalDeliveries > 0 ? 
+                    Math.round(((driver.totalDeliveries - driver.totalReturns) / driver.totalDeliveries) * 100) : 0;
+                
+                return `
+                    <tr>
+                        <td>
+                            <strong>${driver.name}</strong>
+                        </td>
+                        <td>${driver.phoneNumber}</td>
+                        <td>${driver.vehicleNumber}</td>
+                        <td>${getStatusBadge(driver.status)}</td>
+                        <td>
+                            <span class="badge bg-primary">${driver.totalDeliveries}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-danger">${driver.totalReturns}</span>
+                        </td>
+                        <td>
+                            <div class="progress">
+                                <div class="progress-bar ${successRate >= 90 ? 'bg-success' : successRate >= 70 ? 'bg-warning' : 'bg-danger'}" 
+                                     style="width: ${successRate}%">
+                                    ${successRate}%
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewDriverDetails('${driver.id}')">
+                                <i class="bi bi-eye"></i>
+                                عرض
+                            </button>
+                            <button class="btn btn-sm btn-outline-warning" onclick="toggleDriverStatus('${driver.id}')">
+                                <i class="bi bi-toggle-on"></i>
+                                تغيير الحالة
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function getStatusBadge(status) {
+            switch(status) {
+                case 'متاح':
+                    return '<span class="badge badge-available">متاح</span>';
+                case 'مشغول':
+                    return '<span class="badge badge-busy">مشغول</span>';
+                default:
+                    return `<span class="badge bg-secondary">${status}</span>`;
+            }
+        }
+
+        function addNewDriver() {
+            const form = document.getElementById('addDriverForm');
+            const formData = new FormData(form);
+            
+            const driverData = {
+                name: formData.get('name'),
+                phoneNumber: formData.get('phoneNumber'),
+                vehicleNumber: formData.get('vehicleNumber'),
+                status: formData.get('status')
+            };
+            
+            const newDriver = addDriver(driverData);
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addDriverModal'));
+            modal.hide();
+            
+            // Reset form
+            form.reset();
+            
+            // Reload table
+            loadDriversTable();
+            
+            // Show success message
+            showNotification('تم إضافة المندوب بنجاح', 'success');
+        }
+
+        function viewDriverDetails(driverId) {
+            const driver = drivers.find(d => d.id === driverId);
+            if (!driver) return;
+            
+            const driverInvoices = getDriverInvoices(driverId);
+            const successRate = driver.totalDeliveries > 0 ? 
+                Math.round(((driver.totalDeliveries - driver.totalReturns) / driver.totalDeliveries) * 100) : 0;
+            
+            const content = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="bi bi-person-circle"></i>
+                                بيانات المندوب
+                            </div>
+                            <div class="card-body">
+                                <p><strong>الاسم:</strong> ${driver.name}</p>
+                                <p><strong>رقم الهاتف:</strong> ${driver.phoneNumber}</p>
+                                <p><strong>رقم المركبة:</strong> ${driver.vehicleNumber}</p>
+                                <p><strong>الحالة:</strong> ${getStatusBadge(driver.status)}</p>
+                                <p><strong>نسبة النجاح:</strong> ${successRate}%</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="bi bi-graph-up"></i>
+                                الإحصائيات
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-6">
+                                        <div class="stat-number text-primary">${driver.totalDeliveries}</div>
+                                        <div class="stat-label">إجمالي التوصيلات</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="stat-number text-danger">${driver.totalReturns}</div>
+                                        <div class="stat-label">عدد المرتجعات</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="bi bi-receipt"></i>
+                                فواتير المندوب (${driverInvoices.length})
+                            </div>
+                            <div class="card-body">
+                                ${driverInvoices.length > 0 ? `
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>رقم الفاتورة</th>
+                                                    <th>اسم العميل</th>
+                                                    <th>المبلغ</th>
+                                                    <th>الحالة</th>
+                                                    <th>التاريخ</th>
+                                                    <th>تغيير الحالة</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${driverInvoices.map(invoice => `
+                                                    <tr>
+                                                        <td>${invoice.id}</td>
+                                                        <td>${invoice.customerName}</td>
+                                                        <td>${formatCurrency(invoice.amount)}</td>
+                                                        <td>${getStatusBadge(invoice.status)}</td>
+                                                        <td>${formatDate(invoice.date)}</td>
+                                                        <td>
+                                                            <select class="form-select form-select-sm" onchange="updateInvoiceStatusFromDriver('${invoice.id}', this.value)">
+                                                                <option value="قيد التوصيل" ${invoice.status === 'قيد التوصيل' ? 'selected' : ''}>قيد التوصيل</option>
+                                                                <option value="مسلمة" ${invoice.status === 'مسلمة' ? 'selected' : ''}>مسلمة</option>
+                                                                <option value="مرتجعة" ${invoice.status === 'مرتجعة' ? 'selected' : ''}>مرتجعة</option>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                `).join('')}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ` : '<p class="text-center text-muted">لا توجد فواتير لهذا المندوب</p>'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('driverDetailsContent').innerHTML = content;
+            
+            const modal = new bootstrap.Modal(document.getElementById('driverDetailsModal'));
+            modal.show();
+        }
+
+        function toggleDriverStatus(driverId) {
+            const driver = drivers.find(d => d.id === driverId);
+            if (!driver) return;
+            
+            const newStatus = driver.status === 'متاح' ? 'مشغول' : 'متاح';
+            driver.status = newStatus;
+            
+            loadDriversTable();
+            showNotification(`تم تغيير حالة المندوب إلى ${newStatus}`, 'info');
+        }
+
+        function updateInvoiceStatusFromDriver(invoiceId, newStatus) {
+            if (updateInvoiceStatus(invoiceId, newStatus)) {
+                showNotification('تم تحديث حالة الفاتورة بنجاح', 'success');
+                
+                // Refresh the current driver details if modal is open
+                const modal = document.getElementById('driverDetailsModal');
+                if (modal.classList.contains('show')) {
+                    const driverId = modal.dataset.currentDriverId;
+                    if (driverId) {
+                        viewDriverDetails(driverId);
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التنبيهات - نظام إدارة الفواتير والتوصيل</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="bi bi-truck"></i>
+                شركة التوصيل
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="bi bi-house-door"></i> لوحة التحكم
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="invoices.html">
+                            <i class="bi bi-receipt"></i> الفواتير
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="drivers.html">
+                            <i class="bi bi-person-fill-gear"></i> المناديب
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="alerts.html">
+                            <i class="bi bi-exclamation-triangle"></i> التنبيهات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="stock.html">
+                            <i class="bi bi-box-seam"></i> المخزون
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="archive.html">
+                            <i class="bi bi-archive"></i> الأرشيف
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="settings.html">
+                            <i class="bi bi-gear"></i> الإعدادات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light btn-sm mt-1" id="themeToggle" onclick="toggleTheme()">
+                            <i class="bi bi-moon-fill"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="mb-3">
+                    <i class="bi bi-exclamation-triangle text-warning"></i>
+                    التنبيهات
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">الرئيسية</a></li>
+                        <li class="breadcrumb-item active">التنبيهات</li>
+                    </ol>
+                </nav>
+                <p class="text-muted">تنبيهات مهمة تتطلب اهتمامكم الفوري</p>
+            </div>
+        </div>
+
+        <!-- Alert Summary -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="alert alert-danger">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-exclamation-triangle-fill me-2 fs-4"></i>
+                        <div>
+                            <h5 class="alert-heading mb-1">فواتير متأخرة</h5>
+                            <p class="mb-0">فواتير مر عليها أكثر من 24 ساعة دون تغيير حالة</p>
+                        </div>
+                        <div class="ms-auto">
+                            <span class="badge bg-danger fs-6" id="delayedInvoicesCount">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="alert alert-warning">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-box-seam-fill me-2 fs-4"></i>
+                        <div>
+                            <h5 class="alert-heading mb-1">مخزون منخفض</h5>
+                            <p class="mb-0">أصناف في المخزون أقل من الحد الأدنى</p>
+                        </div>
+                        <div class="ms-auto">
+                            <span class="badge bg-warning fs-6" id="lowStockCount">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delayed Invoices Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <i class="bi bi-clock-history"></i>
+                        فواتير متأخرة (مر عليها أكثر من 24 ساعة)
+                        <span class="badge bg-light text-danger ms-2" id="delayedCount">0</span>
+                    </div>
+                    <div class="card-body">
+                        <div id="delayedInvoicesContainer">
+                            <!-- Delayed invoices will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Low Stock Items Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-warning">
+                    <div class="card-header bg-warning text-white">
+                        <i class="bi bi-box-seam"></i>
+                        أصناف المخزون المنخفض
+                        <span class="badge bg-light text-warning ms-2" id="lowStockItemsCount">0</span>
+                    </div>
+                    <div class="card-body">
+                        <div id="lowStockContainer">
+                            <!-- Low stock items will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Alerts -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card border-info">
+                    <div class="card-header bg-info text-white">
+                        <i class="bi bi-graph-down"></i>
+                        أداء المناديب
+                    </div>
+                    <div class="card-body">
+                        <div id="driverPerformanceContainer">
+                            <!-- Driver performance will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-success">
+                    <div class="card-header bg-success text-white">
+                        <i class="bi bi-trophy"></i>
+                        أفضل المناديب
+                    </div>
+                    <div class="card-body">
+                        <div id="topDriversContainer">
+                            <!-- Top drivers will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-lightning"></i>
+                        إجراءات سريعة
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <button class="btn btn-danger w-100" onclick="navigateToPage('invoices.html')">
+                                    <i class="bi bi-receipt"></i>
+                                    مراجعة الفواتير المتأخرة
+                                </button>
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-warning w-100" onclick="navigateToPage('stock.html')">
+                                    <i class="bi bi-box-seam"></i>
+                                    مراجعة المخزون
+                                </button>
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-info w-100" onclick="navigateToPage('drivers.html')">
+                                    <i class="bi bi-person-fill-gear"></i>
+                                    مراجعة أداء المناديب
+                                </button>
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-secondary w-100" onclick="refreshAlerts()">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                    تحديث التنبيهات
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <p>&copy; 2025 شركة التوصيل. جميع الحقوق محفوظة.</p>
+            <p class="small text-muted">نظام إدارة الفواتير والتوصيل - تصميم وتطوير</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+
+    <script>
+        // Page-specific initialization
+        document.addEventListener('appReady', function() {
+            loadAlertsPage();
+        });
+
+        function loadAlertsPage() {
+            loadDelayedInvoices();
+            loadLowStockItems();
+            loadDriverPerformance();
+            loadTopDrivers();
+        }
+
+        function loadDelayedInvoices() {
+            const delayedInvoices = getDelayedInvoices();
+            const container = document.getElementById('delayedInvoicesContainer');
+            
+            document.getElementById('delayedInvoicesCount').textContent = delayedInvoices.length;
+            document.getElementById('delayedCount').textContent = delayedInvoices.length;
+            
+            if (delayedInvoices.length === 0) {
+                container.innerHTML = '<div class="alert alert-success">لا توجد فواتير متأخرة</div>';
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>رقم الفاتورة</th>
+                                <th>اسم العميل</th>
+                                <th>المندوب</th>
+                                <th>المبلغ</th>
+                                <th>آخر تحديث</th>
+                                <th>الإجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${delayedInvoices.map(invoice => {
+                                const driver = drivers.find(d => d.id === invoice.driverId);
+                                const hoursSinceUpdate = Math.floor((new Date() - new Date(invoice.lastStatusUpdate)) / (1000 * 60 * 60));
+                                return `
+                                    <tr class="table-danger">
+                                        <td><strong>${invoice.id}</strong></td>
+                                        <td>${invoice.customerName}</td>
+                                        <td>${driver ? driver.name : 'غير محدد'}</td>
+                                        <td>${formatCurrency(invoice.amount)}</td>
+                                        <td>
+                                            <span class="text-danger">
+                                                <i class="bi bi-clock"></i>
+                                                منذ ${hoursSinceUpdate} ساعة
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-danger" onclick="updateInvoiceStatus('${invoice.id}', 'مرتجعة')">
+                                                <i class="bi bi-x-circle"></i>
+                                                إلغاء
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" onclick="updateInvoiceStatus('${invoice.id}', 'مسلمة')">
+                                                <i class="bi bi-check-circle"></i>
+                                                تسليم
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function loadLowStockItems() {
+            const lowStockItems = getLowStockItems();
+            const container = document.getElementById('lowStockContainer');
+            
+            document.getElementById('lowStockCount').textContent = lowStockItems.length;
+            document.getElementById('lowStockItemsCount').textContent = lowStockItems.length;
+            
+            if (lowStockItems.length === 0) {
+                container.innerHTML = '<div class="alert alert-success">لا توجد أصناف منخفضة في المخزون</div>';
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>الصنف</th>
+                                <th>الفئة</th>
+                                <th>الكمية الحالية</th>
+                                <th>الحد الأدنى</th>
+                                <th>الحالة</th>
+                                <th>المورد</th>
+                                <th>الإجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${lowStockItems.map(item => {
+                                const shortagePercentage = Math.round(((item.minQuantity - item.quantity) / item.minQuantity) * 100);
+                                return `
+                                    <tr class="table-warning">
+                                        <td><strong>${item.name}</strong></td>
+                                        <td>${item.category}</td>
+                                        <td>
+                                            <span class="badge bg-danger">${item.quantity}</span>
+                                        </td>
+                                        <td>${item.minQuantity}</td>
+                                        <td>
+                                            <span class="badge badge-low-stock">
+                                                نقص ${shortagePercentage}%
+                                            </span>
+                                        </td>
+                                        <td>${item.supplier}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="updateStockQuantity('${item.id}')">
+                                                <i class="bi bi-plus-circle"></i>
+                                                تحديث الكمية
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function loadDriverPerformance() {
+            const container = document.getElementById('driverPerformanceContainer');
+            
+            if (drivers.length === 0) {
+                container.innerHTML = '<p class="text-center text-muted">لا توجد بيانات مناديب</p>';
+                return;
+            }
+
+            const performanceData = drivers.map(driver => {
+                const successRate = driver.totalDeliveries > 0 ? 
+                    Math.round(((driver.totalDeliveries - driver.totalReturns) / driver.totalDeliveries) * 100) : 0;
+                return { ...driver, successRate };
+            }).sort((a, b) => a.successRate - b.successRate);
+
+            container.innerHTML = `
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>المندوب</th>
+                                <th>نسبة النجاح</th>
+                                <th>الحالة</th>
+                                <th>التوصيلات</th>
+                                <th>المرتجعات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${performanceData.map(driver => `
+                                <tr class="${driver.successRate < 70 ? 'table-danger' : driver.successRate < 85 ? 'table-warning' : ''}">
+                                    <td>${driver.name}</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar ${driver.successRate >= 90 ? 'bg-success' : driver.successRate >= 70 ? 'bg-warning' : 'bg-danger'}" 
+                                                 style="width: ${driver.successRate}%">
+                                                ${driver.successRate}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>${getStatusBadge(driver.status)}</td>
+                                    <td>${driver.totalDeliveries}</td>
+                                    <td>${driver.totalReturns}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function loadTopDrivers() {
+            const container = document.getElementById('topDriversContainer');
+            
+            if (drivers.length === 0) {
+                container.innerHTML = '<p class="text-center text-muted">لا توجد بيانات مناديب</p>';
+                return;
+            }
+
+            const topDrivers = drivers
+                .map(driver => ({
+                    ...driver,
+                    successRate: driver.totalDeliveries > 0 ? 
+                        Math.round(((driver.totalDeliveries - driver.totalReturns) / driver.totalDeliveries) * 100) : 0,
+                    totalScore: driver.totalDeliveries * 10 - driver.totalReturns * 5
+                }))
+                .sort((a, b) => b.totalScore - a.totalScore)
+                .slice(0, 5);
+
+            container.innerHTML = `
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>الترتيب</th>
+                                <th>المندوب</th>
+                                <th>النقاط</th>
+                                <th>نسبة النجاح</th>
+                                <th>التوصيلات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${topDrivers.map((driver, index) => `
+                                <tr class="${index < 3 ? 'table-success' : ''}">
+                                    <td>
+                                        ${index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
+                                    </td>
+                                    <td>
+                                        <strong>${driver.name}</strong>
+                                        ${index === 0 ? '<i class="bi bi-trophy-fill text-warning"></i>' : ''}
+                                    </td>
+                                    <td>${driver.totalScore}</td>
+                                    <td>${driver.successRate}%</td>
+                                    <td>${driver.totalDeliveries}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function getStatusBadge(status) {
+            switch(status) {
+                case 'متاح':
+                    return '<span class="badge badge-available">متاح</span>';
+                case 'مشغول':
+                    return '<span class="badge badge-busy">مشغول</span>';
+                default:
+                    return `<span class="badge bg-secondary">${status}</span>`;
+            }
+        }
+
+        function updateStockQuantity(itemId) {
+            const newQuantity = prompt('أدخل الكمية الجديدة:');
+            if (newQuantity !== null && !isNaN(newQuantity) && newQuantity >= 0) {
+                if (updateStockQuantity(itemId, parseInt(newQuantity))) {
+                    showNotification('تم تحديث الكمية بنجاح', 'success');
+                    loadAlertsPage(); // Refresh the page
+                }
+            }
+        }
+
+        function refreshAlerts() {
+            loadAlertsPage();
+            showNotification('تم تحديث التنبيهات', 'info');
+        }
+    </script>
+</body>
+</html>

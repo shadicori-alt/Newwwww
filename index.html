@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - نظام إدارة الفواتير والتوصيل</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="bi bi-truck"></i>
+                شركة التوصيل
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">
+                            <i class="bi bi-house-door"></i> لوحة التحكم
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="invoices.html">
+                            <i class="bi bi-receipt"></i> الفواتير
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="drivers.html">
+                            <i class="bi bi-person-fill-gear"></i> المناديب
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="alerts.html">
+                            <i class="bi bi-exclamation-triangle"></i> التنبيهات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="stock.html">
+                            <i class="bi bi-box-seam"></i> المخزون
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="archive.html">
+                            <i class="bi bi-archive"></i> الأرشيف
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="settings.html">
+                            <i class="bi bi-gear"></i> الإعدادات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light btn-sm mt-1" id="themeToggle" onclick="toggleTheme()">
+                            <i class="bi bi-moon-fill"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="text-center mb-3">
+                    <i class="bi bi-speedometer2 text-primary"></i>
+                    لوحة التحكم
+                </h1>
+                <p class="text-center text-secondary">نظام إدارة الفواتير والتوصيل - نظرة عامة على أداء الشركة</p>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="dashboard-grid" id="statsContainer">
+            <!-- Statistics will be loaded here -->
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-lightning"></i>
+                        إجراءات سريعة
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3 col-sm-6">
+                                <button class="btn btn-primary w-100" onclick="navigateToPage('invoices.html')">
+                                    <i class="bi bi-plus-circle"></i>
+                                    إضافة فاتورة جديدة
+                                </button>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <button class="btn btn-success w-100" onclick="navigateToPage('drivers.html')">
+                                    <i class="bi bi-person-plus"></i>
+                                    إضافة مندوب جديد
+                                </button>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <button class="btn btn-info w-100" onclick="navigateToPage('stock.html')">
+                                    <i class="bi bi-box-plus"></i>
+                                    إضافة صنف للمخزون
+                                </button>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <button class="btn btn-warning w-100" onclick="navigateToPage('alerts.html')">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    عرض التنبيهات
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Invoices -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-clock-history"></i>
+                        آخر 10 فواتير
+                    </div>
+                    <div class="card-body">
+                        <div class="recent-invoices" id="recentInvoicesContainer">
+                            <!-- Recent invoices will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-link-45deg"></i>
+                        روابط سريعة
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <a href="invoices.html" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-receipt"></i>
+                                    <br>
+                                    إدارة الفواتير
+                                    <br>
+                                    <small class="text-muted">عرض وتعديل الفواتير</small>
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="drivers.html" class="btn btn-outline-success w-100">
+                                    <i class="bi bi-people"></i>
+                                    <br>
+                                    إدارة المناديب
+                                    <br>
+                                    <small class="text-muted">متابعة أداء المناديب</small>
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="stock.html" class="btn btn-outline-info w-100">
+                                    <i class="bi bi-boxes"></i>
+                                    <br>
+                                    إدارة المخزون
+                                    <br>
+                                    <small class="text-muted">مراقبة المخزون والكميات</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <p>&copy; 2025 شركة التوصيل. جميع الحقوق محفوظة.</p>
+            <p class="small text-muted">نظام إدارة الفواتير والتوصيل - تصميم وتطوير</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+
+    <script>
+        // Page-specific initialization
+        document.addEventListener('appReady', function() {
+            loadDashboard();
+        });
+
+        function loadDashboard() {
+            loadStatistics();
+            loadRecentInvoices();
+        }
+
+        function loadStatistics() {
+            const stats = getStatistics();
+            const container = document.getElementById('statsContainer');
+            
+            container.innerHTML = `
+                <div class="col-md-4 col-sm-6">
+                    <div class="card stat-card fade-in">
+                        <div class="stat-number">${stats.totalInvoices}</div>
+                        <div class="stat-label">إجمالي الفواتير</div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <div class="card stat-card fade-in">
+                        <div class="stat-number text-warning">${stats.pendingInvoices}</div>
+                        <div class="stat-label">قيد التوصيل</div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <div class="card stat-card fade-in">
+                        <div class="stat-number text-success">${stats.deliveredInvoices}</div>
+                        <div class="stat-label">مسلمة</div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <div class="card stat-card fade-in">
+                        <div class="stat-number text-danger">${stats.returnedInvoices}</div>
+                        <div class="stat-label">مرتجعة</div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <div class="card stat-card fade-in">
+                        <div class="stat-number text-info">${stats.totalDrivers}</div>
+                        <div class="stat-label">عدد المناديب</div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <div class="card stat-card fade-in">
+                        <div class="stat-number text-secondary">${stats.totalStockItems}</div>
+                        <div class="stat-label">أصناف المخزون</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadRecentInvoices() {
+            const recentInvoices = getRecentInvoices(10);
+            const container = document.getElementById('recentInvoicesContainer');
+            
+            if (recentInvoices.length === 0) {
+                container.innerHTML = '<p class="text-center text-muted">لا توجد فواتير حتى الآن</p>';
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>رقم الفاتورة</th>
+                                <th>اسم العميل</th>
+                                <th>المبلغ</th>
+                                <th>الحالة</th>
+                                <th>التاريخ</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${recentInvoices.map(invoice => `
+                                <tr>
+                                    <td><strong>${invoice.id}</strong></td>
+                                    <td>${invoice.customerName}</td>
+                                    <td>${formatCurrency(invoice.amount)}</td>
+                                    <td>${getStatusBadge(invoice.status)}</td>
+                                    <td>${formatDate(invoice.date)}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="viewInvoice('${invoice.id}')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function getStatusBadge(status) {
+            switch(status) {
+                case 'قيد التوصيل':
+                    return '<span class="badge badge-pending">قيد التوصيل</span>';
+                case 'مسلمة':
+                    return '<span class="badge badge-delivered">مسلمة</span>';
+                case 'مرتجعة':
+                    return '<span class="badge badge-returned">مرتجعة</span>';
+                default:
+                    return `<span class="badge bg-secondary">${status}</span>`;
+            }
+        }
+
+        function viewInvoice(invoiceId) {
+            // Redirect to invoices page with specific invoice
+            window.location.href = `invoices.html#${invoiceId}`;
+        }
+    </script>
+</body>
+</html>

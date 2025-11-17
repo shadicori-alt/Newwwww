@@ -1,0 +1,57 @@
+[
+  {
+    "id": "INV001",
+    "customerName": "أحمد محمد",
+    "phoneNumber": "01234567890",
+    "address": "القاهرة - مدينة نصر - شارع عباس العقاد",
+    "amount": 1250.50,
+    "driverId": "DRIVER001",
+    "status": "قيد التوصيل",
+    "date": "2025-11-17",
+    "lastStatusUpdate": "2025-11-17T10:30:00"
+  },
+  {
+    "id": "INV002",
+    "customerName": "سارة أحمد",
+    "phoneNumber": "01123456789",
+    "address": "الجيزة - الدقي - شارع التحرير",
+    "amount": 875.25,
+    "driverId": "DRIVER002",
+    "status": "مسلمة",
+    "date": "2025-11-16",
+    "lastStatusUpdate": "2025-11-16T15:45:00"
+  },
+  {
+    "id": "INV003",
+    "customerName": "محمود علي",
+    "phoneNumber": "01012345678",
+    "address": "الإسكندرية - سيدي جابر - شارع فؤاد",
+    "amount": 2100.00,
+    "driverId": "DRIVER001",
+    "status": "مرتجعة",
+    "date": "2025-11-15",
+    "lastStatusUpdate": "2025-11-15T09:15:00"
+  },
+  {
+    "id": "INV004",
+    "customerName": "فاطمة حسن",
+    "phoneNumber": "01234567891",
+    "address": "القاهرة - المعادي - شارع 9",
+    "amount": 650.75,
+    "driverId": "DRIVER003",
+    "status": "قيد التوصيل",
+    "date": "2025-11-17",
+    "lastStatusUpdate": "2025-11-17T08:20:00"
+  },
+  {
+    "id": "INV005",
+    "customerName": "خالد إبراهيم",
+    "phoneNumber": "01123456790",
+    "address": "الجيزة - الهرم - شارع الملك فيصل",
+    "amount": 1800.50,
+    "driverId": "DRIVER002",
+    "status": "مسلمة",
+    "date": "2025-11-14",
+    "lastStatusUpdate": "2025-11-14T12:30:00"
+  }
+]
